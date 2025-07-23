@@ -2,10 +2,10 @@ workflows:
   ios-release-no-shorebird:
     name: iOS Release
     environment:
-      flutter: stable
+      flutter: 3.29.3
       xcode: latest
     scripts:
-      - flutter build ios --simulator
+      - flutter build ios
       - mkdir -p build/ios/ipa
       - zip -r build/ios/ipa/Runner.app.zip build/ios/iphonesimulator/Runner.app
     artifacts:
