@@ -13,6 +13,7 @@ import 'package:new_azkar_app/features/public/providers/contents_provider.dart';
 import 'package:new_azkar_app/features/public/providers/headers_provider.dart';
 import 'package:new_azkar_app/features/quran/views/quran_page.dart';
 import 'package:flutter/gestures.dart';
+import 'package:new_azkar_app/core/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -1030,7 +1031,18 @@ class _ContentsViewState extends ConsumerState<ContentsView>
   ) {
     List<TextSpan> spans = renderQuranText(text, quranFont);
     // final spans = renderSpecialCaseLink(text, context, quranSpans);
-    final finalSpans = formatContentTextAndLinks(spans, context);
+    List<TextSpan> finalSpans = styleTextBetweenDoubleParentheses(
+      spans,
+      highlightedStyle: TextStyle(color: const Color.fromARGB(255, 255, 72, 0), fontWeight: FontWeight.bold),
+      // normalStyle: TextStyle(color: Colors.black),
+    );
+    finalSpans = formatContentTextAndLinks(finalSpans, context);
+    finalSpans = styleTextByRegex(
+      spans: finalSpans,
+      pattern: RegExp(r'"(.*?)"'),
+      matchStyle: TextStyle(color: AppColors.success, fontWeight: FontWeight.bold),
+      // normalStyle: TextStyle(color: Colors.black),
+    );
     return TextSpan(
       children: finalSpans,
       style: TextStyle(fontSize: fontSize, fontFamily: contentFont),
