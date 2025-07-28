@@ -50,16 +50,16 @@ class TheSupplicationsView extends ConsumerWidget {
                       headers: [
                         HeaderModel(
                           label: 'أذكار وأوراد تقرأ صباحًا',
-                          headers: [93, 95, 97, 99, 100, 101, 102, 103, 104],
+                          headers: [93, 95, 97, 99, 101, 102, 103, 105, 106],
                         ),
                         HeaderModel(
                           label: 'أذكار وأوراد تقرأ مساء',
-                          headers: [94, 96, 98, 99, 100, 101, 102, 103, 104],
+                          headers: [94, 96, 98, 100, 101, 102, 104, 105, 106],
                         ),
                         HeaderModel(
                           label: 'أذكار وأوراد تقرأ صباحًا أو مساء',
-                          fromHeader: 105,
-                          toHeader: 123,
+                          fromHeader: 107,
+                          toHeader: 125,
                         ),
                       ],
                     ),
@@ -76,8 +76,8 @@ class TheSupplicationsView extends ConsumerWidget {
                     Routes.headersViewer,
                     extra: HeaderModel(
                       label: 'أذكار وأدعية خاصة',
-                      fromHeader: 124,
-                      toHeader: 142,
+                      fromHeader: 126,
+                      toHeader: 144,
                     ),
                   ),
             ),
