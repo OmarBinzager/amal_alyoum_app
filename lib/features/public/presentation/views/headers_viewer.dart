@@ -18,7 +18,7 @@ class HeadersViewer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final headers = ref.read(headersProvider);
-    final headerCount = headerModel.toHeader - headerModel.fromHeader + 1;
+    final headerCount = headerModel.headers!.length;
 
     return Scaffold(
       backgroundColor: AppColors.fourthColor,
@@ -112,19 +112,14 @@ class HeadersViewer extends ConsumerWidget {
   List<Widget> buildContent(WidgetRef ref, BuildContext context) {
     final headers = ref.read(headersProvider);
     List<Widget> widgets = [];
-
-    for (
-      int index = headerModel.fromHeader;
-      index <= headerModel.toHeader;
-      index++
-    ) {
+    int itemIndex = 0;
+    for (int index in headerModel.headers!) {
       final header = headers[index];
-      final itemIndex = index - headerModel.fromHeader;
 
       widgets.add(
         Padding(
           padding: const EdgeInsets.only(bottom: 12),
-          child: _buildContentCard(context, header, itemIndex, index),
+          child: _buildContentCard(context, header, itemIndex++, index),
         ),
       );
     }

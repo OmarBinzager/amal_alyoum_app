@@ -7,6 +7,7 @@ class SettingsService {
   static const String _contentFontFamilyKey = 'content_font_family';
   static const String _nightModeKey = 'night_mode';
 
+
   static const double _defaultFontSize = 22.0;
   static const bool _defaultAutoPlayAudio = false;
   static const String _defaultQuranFontFamily = 'UthmanicHafs_V20';

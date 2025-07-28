@@ -5,6 +5,7 @@ import 'package:new_azkar_app/core/constants/routes.dart';
 import 'package:new_azkar_app/core/constants/shadows.dart';
 import 'package:new_azkar_app/core/constants/text_styles.dart';
 import 'package:new_azkar_app/core/widgets/app_tile.dart';
+import 'package:new_azkar_app/features/public/models/header_model.dart';
 import 'package:new_azkar_app/features/public/providers/headers_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,14 +17,6 @@ class FridayNightView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final headers = ref.read(headersProvider);
-    final icons = [
-      Icons.nightlight_round,
-      Icons.sunny,
-      Icons.menu_book_outlined,
-      FontAwesomeIcons.handsPraying,
-      FontAwesomeIcons.personPraying,
-      FontAwesomeIcons.personWalking,
-    ];
     return Scaffold(
       backgroundColor: AppColors.fourthColor,
       appBar: AppBar(
@@ -47,16 +40,36 @@ class FridayNightView extends ConsumerWidget {
             _buildHeaderCard(),
             const SizedBox(height: 24),
             // _buildFridayCard(context, headers[126]),
-            ...List.generate(
-              icons.length,
-              (index) => _buildMainCard(
-                icon: icons[index],
-                title: headers[126 + index].name,
-                subtitle: 'ما يطلب ليلة الجمعة ويومها',
-                color: AppColors.primaryColor,
-                onTap:
-                    () => context.pushNamed(Routes.contents, extra: headers[126 + index]),
-              ),
+            _buildFriDayCard(
+              icon: FontAwesomeIcons.moon,
+              title: 'ما يطلب ليلة الجمعة',
+              subtitle: 'أذكار وأدعية خاصة بليلة الجمعة',
+              color: const Color.fromARGB(255, 15, 1, 49),
+              onTap:
+                  () => context.pushNamed(
+                    Routes.headersViewer,
+                    extra: HeaderModel(
+                      label: 'ما يطلب ليلة الجمعة',
+                      fromHeader: 140,
+                      toHeader: 143,
+                    ),
+                  ),
+            ),
+            const SizedBox(height: 16),
+            _buildFriDayCard(
+              icon: FontAwesomeIcons.sun,
+              title: 'ما يطلب يوم الجمعة',
+              subtitle: 'أذكار وأدعية خاصة بيوم الجمعة',
+              color: AppColors.gold,
+              onTap:
+                  () => context.pushNamed(
+                    Routes.headersViewer,
+                    extra: HeaderModel(
+                      label: 'ما يطلب يوم الجمعة',
+                      fromHeader: 144,
+                      toHeader: 150,
+                    ),
+                  ),
             ),
             // const SizedBox(height: 32),
           ],
@@ -189,20 +202,26 @@ class FridayNightView extends ConsumerWidget {
     );
   }
 
-  Widget _buildFridayCard(BuildContext context, header) {
+  Widget _buildFriDayCard({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: CShadow.MD,
-        border: Border.all(color: AppColors.primaryColor.withOpacity(0.1)),
+        border: Border.all(color: color.withOpacity(0.1)),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          onTap: () => context.pushNamed(Routes.contents, extra: header),
+          onTap: onTap,
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -211,18 +230,14 @@ class FridayNightView extends ConsumerWidget {
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    color: AppColors.primaryColor.withOpacity(0.1),
+                    color: color.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Icon(
-                    Icons.mosque,
-                    color: AppColors.primaryColor,
-                    size: 40,
-                  ),
+                  child: Icon(icon, color: color, size: 40),
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'ما يطلب ليلة الجمعة ويومها',
+                  title,
                   style: TextStyles.bold.copyWith(
                     color: AppColors.secondaryColor,
                     fontSize: 18,
@@ -231,7 +246,7 @@ class FridayNightView extends ConsumerWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'أدعية وأذكار خاصة بليلة الجمعة ويومها المبارك',
+                  subtitle,
                   style: TextStyles.medium.copyWith(
                     color: Colors.grey[600],
                     fontSize: 14,
@@ -246,22 +261,18 @@ class FridayNightView extends ConsumerWidget {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.primaryColor.withOpacity(0.1),
+                    color: color.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
-                        Icons.arrow_forward,
-                        color: AppColors.primaryColor,
-                        size: 16,
-                      ),
+                      Icon(Icons.arrow_forward, color: color, size: 16),
                       const SizedBox(width: 8),
                       Text(
                         'عرض المحتوى',
                         style: TextStyles.medium.copyWith(
-                          color: AppColors.primaryColor,
+                          color: color,
                           fontSize: 14,
                         ),
                       ),

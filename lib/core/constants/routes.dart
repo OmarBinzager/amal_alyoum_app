@@ -13,6 +13,7 @@ class Routes {
   static const contents = 'contents';
   static const contentDetails = 'contentDetails';
   static const headersViewer = 'headersViewer';
+  static const headersOfHeadersViewer = 'headersOfHeadersViewer';
   static const everydayEtiquette = 'everydayEtiquette';
   static const theSupplications = 'theSupplications';
   static const fridayNight = 'fridayNight';

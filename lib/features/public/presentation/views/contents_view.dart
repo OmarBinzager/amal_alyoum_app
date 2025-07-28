@@ -31,12 +31,16 @@ import 'dart:async';
 import 'package:string_validator/string_validator.dart';
 
 // Add available fonts
-const List<String> quranFonts = [
-  TextStyles.nabiQuranFont,
-  TextStyles.uthmanicQuranFont,
-  'Amiri',
+const List<Map<String, String>> quranFonts = [
+  {'name': 'خط نبي القرآن', 'code': TextStyles.nabiQuranFont},
+  {'name': 'الخط العثماني', 'code': TextStyles.uthmanicQuranFont},
+  {'name': 'خط أميري', 'code': 'Amiri'},
 ];
-const List<String> contentFonts = ['Lotus', 'ElMessiri', 'Amiri-Regular'];
+const List<Map<String, String>> contentFonts = [
+  {'name': 'خط اللوتس', 'code': 'Lotus'},
+  {'name': 'خط أميري', 'code': 'Amiri-Regular'},
+  {'name': 'خط المسيري', 'code': 'ElMessiri'},
+];
 
 class ContentsView extends ConsumerStatefulWidget {
   final Header header;
@@ -999,17 +1003,17 @@ class _ContentsViewState extends ConsumerState<ContentsView>
             SizedBox(height: 10),
             ...fonts.map((font) {
               return ListTile(
-                title: Text(font, style: TextStyle(fontFamily: font)),
+                title: Text(font['name']!, style: TextStyle(fontFamily: font['code'])),
                 trailing:
-                    selectedFont == font
+                    selectedFont == font['code']
                         ? Icon(Icons.check, color: AppColors.secondaryColor)
                         : null,
                 onTap: () {
                   final notifier = ref.read(settingsProvider.notifier);
                   if (isQuranFont) {
-                    notifier.setQuranFontFamily(font);
+                    notifier.setQuranFontFamily(font['code']!);
                   } else {
-                    notifier.setContentFontFamily(font);
+                    notifier.setContentFontFamily(font['code']!);
                   }
                   Navigator.pop(context);
                 },
@@ -1033,14 +1037,20 @@ class _ContentsViewState extends ConsumerState<ContentsView>
     // final spans = renderSpecialCaseLink(text, context, quranSpans);
     List<TextSpan> finalSpans = styleTextBetweenDoubleParentheses(
       spans,
-      highlightedStyle: TextStyle(color: const Color.fromARGB(255, 255, 72, 0), fontWeight: FontWeight.bold),
+      highlightedStyle: TextStyle(
+        color: const Color.fromARGB(255, 255, 72, 0),
+        fontWeight: FontWeight.bold,
+      ),
       // normalStyle: TextStyle(color: Colors.black),
     );
     finalSpans = formatContentTextAndLinks(finalSpans, context);
     finalSpans = styleTextByRegex(
       spans: finalSpans,
       pattern: RegExp(r'"(.*?)"'),
-      matchStyle: TextStyle(color: AppColors.success, fontWeight: FontWeight.bold),
+      matchStyle: TextStyle(
+        color: AppColors.success,
+        fontWeight: FontWeight.bold,
+      ),
       // normalStyle: TextStyle(color: Colors.black),
     );
     return TextSpan(

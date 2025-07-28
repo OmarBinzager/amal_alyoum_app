@@ -8,6 +8,7 @@ import 'package:new_azkar_app/features/public/models/header_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:new_azkar_app/features/public/models/header_of_header_model.dart';
 
 class TheSupplicationsView extends ConsumerWidget {
   const TheSupplicationsView({super.key});
@@ -43,11 +44,24 @@ class TheSupplicationsView extends ConsumerWidget {
               color: AppColors.secondaryColor,
               onTap:
                   () => context.pushNamed(
-                    Routes.headersViewer,
-                    extra: HeaderModel(
+                    Routes.headersOfHeadersViewer,
+                    extra: HeaderOfHeaderModel(
                       label: 'أذكار وأوراد اليومية',
-                      fromHeader: 79,
-                      toHeader: 106,
+                      headers: [
+                        HeaderModel(
+                          label: 'أذكار وأوراد تقرأ صباحًا',
+                          headers: [93, 95, 97, 99, 100, 101, 102, 103, 104],
+                        ),
+                        HeaderModel(
+                          label: 'أذكار وأوراد تقرأ مساء',
+                          headers: [94, 96, 98, 99, 100, 101, 102, 103, 104],
+                        ),
+                        HeaderModel(
+                          label: 'أذكار وأوراد تقرأ صباحًا أو مساء',
+                          fromHeader: 105,
+                          toHeader: 123,
+                        ),
+                      ],
                     ),
                   ),
             ),
@@ -62,8 +76,8 @@ class TheSupplicationsView extends ConsumerWidget {
                     Routes.headersViewer,
                     extra: HeaderModel(
                       label: 'أذكار وأدعية خاصة',
-                      fromHeader: 107,
-                      toHeader: 125,
+                      fromHeader: 121,
+                      toHeader: 139,
                     ),
                   ),
             ),

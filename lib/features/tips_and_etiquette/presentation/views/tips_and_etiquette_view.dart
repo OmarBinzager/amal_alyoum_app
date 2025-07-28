@@ -40,7 +40,7 @@ class TipsAndEtiquetteView extends ConsumerWidget {
             const SizedBox(height: 24),
             _buildTipsCard(
               context,
-              headers[132],
+              headers[79],
               'نصائح عامة',
               'إرشادات عامة للحياة اليومية',
               Icons.tips_and_updates_rounded,
@@ -49,7 +49,7 @@ class TipsAndEtiquetteView extends ConsumerWidget {
             const SizedBox(height: 16),
             _buildTipsCard(
               context,
-              headers[133],
+              headers[80],
               'نصائح لطالب العلم',
               'إرشادات خاصة لطلاب العلم',
               Icons.school_rounded,
@@ -58,7 +58,7 @@ class TipsAndEtiquetteView extends ConsumerWidget {
             const SizedBox(height: 16),
             _buildTipsCard(
               context,
-              headers[134],
+              headers[81],
               'من آداب طالب العلم',
               'الآداب والسلوكيات المطلوبة',
               Icons.auto_stories_rounded,

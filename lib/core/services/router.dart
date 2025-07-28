@@ -1,4 +1,5 @@
 import 'package:new_azkar_app/core/constants/routes.dart';
+import 'package:new_azkar_app/features/public/models/header_of_header_model.dart';
 import 'package:new_azkar_app/features/quran/views/quran_page.dart';
 import 'package:new_azkar_app/features/quran/views/quran_sura_page.dart';
 import 'package:new_azkar_app/features/search/presentation/views/search_view.dart';
@@ -16,6 +17,7 @@ import 'package:new_azkar_app/features/public/models/header_model.dart';
 import 'package:new_azkar_app/features/public/presentation/views/content_details_view.dart';
 import 'package:new_azkar_app/features/public/presentation/views/contents_view.dart';
 import 'package:new_azkar_app/features/public/presentation/views/headers_viewer.dart';
+import 'package:new_azkar_app/features/public/presentation/views/headers_of_headers_viewer.dart';
 import 'package:new_azkar_app/features/splash/views/splash_view.dart';
 import 'package:new_azkar_app/features/the_supplications/presentation/views/the_supplications_view.dart';
 import 'package:new_azkar_app/features/tips_and_etiquette/presentation/views/tips_and_etiquette_view.dart';
@@ -67,6 +69,12 @@ final router = GoRouter(
       path: '/headersViewer',
       builder:
           (context, state) => HeadersViewer(headerModel: state.extra as HeaderModel),
+    ),
+    GoRoute(
+      name: Routes.headersOfHeadersViewer,
+      path: '/headersOfHeadersViewer',
+      builder:
+          (context, state) => HeadersOfHeadersViewer(headerList: state.extra as HeaderOfHeaderModel),
     ),
     GoRoute(
       name: Routes.prayers,
