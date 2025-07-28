@@ -266,14 +266,13 @@ class IsarHelper {
     ///  ما يطلب ليلة الجمعة ويومها
     ///
     /// ما يطلب ليلة الجمعة
-    Header(incrementedHeaderId++, 'قراءة سورة الكهف'), // 141
+    Header(incrementedHeaderId++, 'قراءة سورة الكهف'), // 144
     Header(incrementedHeaderId++, 'الاكثار من الصلاة على النبي'),
     Header(
       incrementedHeaderId++,
       'قراءة آخر سورة الجاثية، وجعل ثوابه للوالدين',
     ),
-    Header(incrementedHeaderId++, 'دعاء ورد لطلب المغفرة للوالدين'),
-
+    Header(incrementedHeaderId++, 'دعاء ورد لطلب المغفرة للوالدين'), // 147
     /// ما يطلب ليلة الجمعة
     Header(incrementedHeaderId++, 'توزيع الأوقات في العبادة و التبكير للجامع'),
     Header(incrementedHeaderId++, 'سور يطلب قراءتها يوم الجمعة'),
@@ -281,7 +280,7 @@ class IsarHelper {
     Header(incrementedHeaderId++, 'صيغة خاصة من الصلاة على النبي'),
     Header(incrementedHeaderId++, 'أربع ركعات فضيلة'),
     Header(incrementedHeaderId++, 'أذكار بعد صلاة الجمعة'),
-    Header(incrementedHeaderId++, 'ما يقال بعد الانصرف من صلاة الجمعة'), // 151
+    Header(incrementedHeaderId++, 'ما يقال بعد الانصرف من صلاة الجمعة'), // 154
   ];
   static List<Content> contents = [
     /// صلاة الفجر

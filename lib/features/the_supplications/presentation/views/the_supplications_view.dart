@@ -76,8 +76,8 @@ class TheSupplicationsView extends ConsumerWidget {
                     Routes.headersViewer,
                     extra: HeaderModel(
                       label: 'أذكار وأدعية خاصة',
-                      fromHeader: 121,
-                      toHeader: 139,
+                      fromHeader: 124,
+                      toHeader: 143,
                     ),
                   ),
             ),
