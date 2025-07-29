@@ -1003,7 +1003,10 @@ class _ContentsViewState extends ConsumerState<ContentsView>
             SizedBox(height: 10),
             ...fonts.map((font) {
               return ListTile(
-                title: Text(font['name']!, style: TextStyle(fontFamily: font['code'])),
+                title: Text(
+                  font['name']!,
+                  style: TextStyle(fontFamily: font['code']),
+                ),
                 trailing:
                     selectedFont == font['code']
                         ? Icon(Icons.check, color: AppColors.secondaryColor)
@@ -1043,7 +1046,6 @@ class _ContentsViewState extends ConsumerState<ContentsView>
       ),
       // normalStyle: TextStyle(color: Colors.black),
     );
-    finalSpans = formatContentTextAndLinks(finalSpans, context);
     finalSpans = styleTextByRegex(
       spans: finalSpans,
       pattern: RegExp(r'"(.*?)"'),
@@ -1053,6 +1055,7 @@ class _ContentsViewState extends ConsumerState<ContentsView>
       ),
       // normalStyle: TextStyle(color: Colors.black),
     );
+    finalSpans = formatContentTextAndLinks(finalSpans, context);
     return TextSpan(
       children: finalSpans,
       style: TextStyle(fontSize: fontSize, fontFamily: contentFont),
