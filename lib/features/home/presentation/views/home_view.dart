@@ -146,9 +146,9 @@ class _HomeViewState extends ConsumerState<HomeView>
                   child: Text(
                     'حُرُوْفْ',
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 25,
                       fontFamily: 'DecoTypeThuluthII',
-                      color: AppColors.secondaryColor.withOpacity(.5),
+                      color: AppColors.secondaryColor.withOpacity(.7),
                     ),
                   ),
                 ),
@@ -677,10 +677,10 @@ class _HomeViewState extends ConsumerState<HomeView>
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: Text(
+                        child:Text(
                           label,
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: adaptiveFontSize(context, 16),
                             color: Colors.white,
                             fontWeight: FontWeight.w600,
                           ),

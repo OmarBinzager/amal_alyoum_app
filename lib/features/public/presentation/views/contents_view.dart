@@ -566,13 +566,13 @@ class _ContentsViewState extends ConsumerState<ContentsView>
       }
     }
 
-    return Scaffold(
-      backgroundColor:
-          settings.nightMode
-              ? AppColors.fourthColor[900]
-              : AppColors.fourthColor,
-      body: SafeArea(
-        child: Listener(
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor:
+            settings.nightMode
+                ? AppColors.fourthColor[900]
+                : AppColors.fourthColor,
+        body: Listener(
           onPointerUp: _onPointerUp,
           child: Stack(
             children: [
@@ -754,45 +754,45 @@ class _ContentsViewState extends ConsumerState<ContentsView>
             ],
           ),
         ),
+        floatingActionButton:
+            _showAudioControls
+                ? FloatingActionButton(
+                  backgroundColor:
+                      settings.nightMode
+                          ? AppColors.fourthColor[800]
+                          : Colors.white,
+                  child:
+                      content!.isLiked
+                          ? Icon(Icons.favorite, color: AppColors.error)
+                          : Icon(
+                            Icons.favorite_border,
+                            color:
+                                settings.nightMode
+                                    ? AppColors.secondaryColor[100]
+                                    : AppColors.secondaryColor,
+                          ),
+                  onPressed: () async {
+                    await favorite.changeStats(content!.id, !content!.isLiked);
+                    content!.isLiked = !content!.isLiked;
+                    setState(() {});
+                  },
+                )
+                : null,
+        bottomNavigationBar:
+            (content != null &&
+                    content!.hasVoice &&
+                    content!.voiceFile != null &&
+                    _showAudioControls)
+                ? Container(
+                  color: Colors.transparent,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  child: _buildAudioControls(),
+                )
+                : null,
       ),
-      floatingActionButton:
-          _showAudioControls
-              ? FloatingActionButton(
-                backgroundColor:
-                    settings.nightMode
-                        ? AppColors.fourthColor[800]
-                        : Colors.white,
-                child:
-                    content!.isLiked
-                        ? Icon(Icons.favorite, color: AppColors.error)
-                        : Icon(
-                          Icons.favorite_border,
-                          color:
-                              settings.nightMode
-                                  ? AppColors.secondaryColor[100]
-                                  : AppColors.secondaryColor,
-                        ),
-                onPressed: () async {
-                  await favorite.changeStats(content!.id, !content!.isLiked);
-                  content!.isLiked = !content!.isLiked;
-                  setState(() {});
-                },
-              )
-              : null,
-      bottomNavigationBar:
-          (content != null &&
-                  content!.hasVoice &&
-                  content!.voiceFile != null &&
-                  _showAudioControls)
-              ? Container(
-                color: Colors.transparent,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                child: _buildAudioControls(),
-              )
-              : null,
     );
   }
 

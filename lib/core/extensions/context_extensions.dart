@@ -234,6 +234,21 @@ List<TextSpan> styleTextByRegex({
   return result;
 }
 
+double adaptiveFontSize(BuildContext context, double baseFontSize) {
+  double screenWidth = MediaQuery.of(context).size.width;
+
+  // Scale factor based on a design width (e.g., 375 for iPhone X)
+  double scaleFactor = screenWidth / 375.0;
+
+  // Limit the scaling to avoid text being too small or too large
+  double minScale = 0.8; // 80% of base size
+  double maxScale = 1.2; // 120% of base size
+
+  double adjustedScale = scaleFactor.clamp(minScale, maxScale);
+
+  return baseFontSize * adjustedScale;
+}
+
 /// Styles text between double parentheses (( )) in a list of TextSpans, removing the parentheses and applying highlightedStyle to the inner text.
 List<TextSpan> styleTextBetweenDoubleParentheses(
   List<TextSpan> spans, {
