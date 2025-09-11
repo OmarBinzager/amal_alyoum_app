@@ -7,6 +7,7 @@ import 'package:new_azkar_app/core/services/settings_service.dart';
 import 'package:new_azkar_app/core/providers/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_plus/share_plus.dart';
 
 class SettingsView extends ConsumerStatefulWidget {
   const SettingsView({super.key});
@@ -134,6 +135,14 @@ class _SettingsViewState extends ConsumerState<SettingsView>
                 title: 'إصدار التطبيق',
                 subtitle: '1.0.0',
                 color: AppColors.primaryColor,
+              ),
+              const SizedBox(height: 12),
+              _buildInfoTile(
+                icon: Icons.share,
+                title: 'مشاركة التطبيق',
+                subtitle: 'شارك التطبيق لتنفع غيرك',
+                color: AppColors.primaryColor,
+                onTap: onShare,
               ),
               const SizedBox(height: 12),
               _buildInfoTile(
@@ -626,6 +635,14 @@ class _SettingsViewState extends ConsumerState<SettingsView>
         );
       },
     );
+  }
+
+  void onShare() {
+    String message =
+        '\n\n ✨ حمل تطبيق عمل اليوم والليلة الآن من متجر التطبيقات ✨\n تطبيق رائع يحتوي جميع اعمال وأدعية المسلم في يومه وليلته, ايضاً يمكنك قراءة القرآن وتتبع أوقات الأذان. وأينما كنت يمكنك تحديد اتجاه القبلة. فقط حمله الآن!.\n'
+        'https://play.google.com/store/apps/details?id=com.Letterspd.amal_alyoum';
+
+    SharePlus.instance.share(ShareParams(text: message));
   }
 
   Future<void> _updatenew_azkar_appData() async {

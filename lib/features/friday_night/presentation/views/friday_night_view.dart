@@ -50,8 +50,8 @@ class FridayNightView extends ConsumerWidget {
                     Routes.headersViewer,
                     extra: HeaderModel(
                       label: 'ما يطلب ليلة الجمعة',
-                      fromHeader: 145,
-                      toHeader: 148,
+                      fromHeader: 151,
+                      toHeader: 154,
                     ),
                   ),
             ),
@@ -66,8 +66,8 @@ class FridayNightView extends ConsumerWidget {
                     Routes.headersViewer,
                     extra: HeaderModel(
                       label: 'ما يطلب يوم الجمعة',
-                      fromHeader: 149,
-                      toHeader: 155,
+                      fromHeader: 155,
+                      toHeader: 161,
                     ),
                   ),
             ),

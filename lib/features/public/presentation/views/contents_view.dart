@@ -959,7 +959,7 @@ class _ContentsViewState extends ConsumerState<ContentsView>
 
     message +=
         '\n\n تمت مشاركة النص بواسطة تطبيق عمل اليوم والليلة\n'
-        'URl in google ply';
+        'https://play.google.com/store/apps/details?id=com.Letterspd.amal_alyoum';
 
     SharePlus.instance.share(ShareParams(text: message));
   }
