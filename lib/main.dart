@@ -1,22 +1,35 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:new_azkar_app/core/constants/app_colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:new_azkar_app/firebase_options.dart';
 import 'core/services/router.dart';
 import 'core/services/storage_provider.dart';
+import 'core/providers/version_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final storageClient = await ProviderContainer().read(
     storageInitProvider.future,
   );
-  runApp(
-    ProviderScope(
-      overrides: [storageProvider.overrideWith((ref) => storageClient)],
-      child: const MyApp(),
-    ),
+
+  // Check for app updates and update data if necessary
+  final container = ProviderContainer(
+    overrides: [storageProvider.overrideWith((ref) => storageClient)],
   );
+
+  try {
+    await container
+        .read(dataUpdateProvider.notifier)
+        .checkAndUpdateIfRequired();
+  } catch (e) {
+    // Ignore errors during startup update check
+  }
+
+  runApp(ProviderScope(parent: container, child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {

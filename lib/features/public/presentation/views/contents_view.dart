@@ -37,7 +37,6 @@ const List<Map<String, String>> quranFonts = [
   {'name': 'خط أميري', 'code': 'Amiri'},
 ];
 const List<Map<String, String>> contentFonts = [
-  {'name': 'خط اللوتس', 'code': 'Lotus'},
   {'name': 'خط أميري', 'code': 'Amiri-Regular'},
   {'name': 'خط المسيري', 'code': 'ElMessiri'},
 ];

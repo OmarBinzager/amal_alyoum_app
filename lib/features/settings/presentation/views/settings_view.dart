@@ -5,6 +5,7 @@ import 'package:new_azkar_app/core/constants/text_styles.dart';
 import 'package:new_azkar_app/core/services/isar_services.dart';
 import 'package:new_azkar_app/core/services/settings_service.dart';
 import 'package:new_azkar_app/core/providers/settings_provider.dart';
+import 'package:new_azkar_app/core/providers/version_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
@@ -44,6 +45,8 @@ class _SettingsViewState extends ConsumerState<SettingsView>
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsProvider);
+    final versionAsync = ref.watch(versionProvider);
+    final dataUpdateState = ref.watch(dataUpdateProvider);
 
     if (settings.isLoading) {
       return Scaffold(
@@ -123,18 +126,38 @@ class _SettingsViewState extends ConsumerState<SettingsView>
               _buildActionTile(
                 icon: Icons.update,
                 title: 'تحديث بيانات الأذكار',
-                subtitle: 'إعادة تهيئة بيانات التطبيق',
+                subtitle:
+                    dataUpdateState.isLoading
+                        ? 'جاري التحديث...'
+                        : 'إعادة تهيئة بيانات التطبيق (يتم تلقائياً عند تحديث التطبيق)',
                 onTap: _showUpdateDataDialog,
                 color: AppColors.warring,
               ),
               const SizedBox(height: 16),
 
               _buildSectionTitle('حول التطبيق'),
-              _buildInfoTile(
-                icon: Icons.info_outline,
-                title: 'إصدار التطبيق',
-                subtitle: '1.0.0',
-                color: AppColors.primaryColor,
+              versionAsync.when(
+                data:
+                    (version) => _buildInfoTile(
+                      icon: Icons.info_outline,
+                      title: 'إصدار التطبيق',
+                      subtitle: version, // Real version from package_info_plus
+                      color: AppColors.primaryColor,
+                    ),
+                loading:
+                    () => _buildInfoTile(
+                      icon: Icons.info_outline,
+                      title: 'إصدار التطبيق',
+                      subtitle: 'جاري التحميل...',
+                      color: AppColors.primaryColor,
+                    ),
+                error:
+                    (_, __) => _buildInfoTile(
+                      icon: Icons.info_outline,
+                      title: 'إصدار التطبيق',
+                      subtitle: '1.4.0', // Fallback version
+                      color: AppColors.primaryColor,
+                    ),
               ),
               const SizedBox(height: 12),
               _buildInfoTile(
@@ -600,7 +623,7 @@ class _SettingsViewState extends ConsumerState<SettingsView>
             ],
           ),
           content: Text(
-            'سيتم حذف جميع البيانات الحالية وإعادة إدخالها من جديد. هل أنت متأكد؟',
+            'سيتم حذف جميع البيانات الحالية وإعادة إدخالها من جديد.\n\nملاحظة: يتم هذا التحديث تلقائياً عند تحديث التطبيق.\n\nهل أنت متأكد من المتابعة؟',
             style: TextStyles.regular.copyWith(
               color: Colors.grey[700],
               height: 1.4,
@@ -617,7 +640,7 @@ class _SettingsViewState extends ConsumerState<SettingsView>
             ElevatedButton(
               onPressed: () async {
                 Navigator.of(context).pop();
-                await _updatenew_azkar_appData();
+                await _updateData();
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.warring,
@@ -639,57 +662,17 @@ class _SettingsViewState extends ConsumerState<SettingsView>
 
   void onShare() {
     String message =
-        '\n\n ✨ حمل تطبيق عمل اليوم والليلة الآن من متجر التطبيقات ✨\n تطبيق رائع يحتوي جميع اعمال وأدعية المسلم في يومه وليلته, ايضاً يمكنك قراءة القرآن وتتبع أوقات الأذان. وأينما كنت يمكنك تحديد اتجاه القبلة. فقط حمله الآن!.\n'
+        '\n\n ✨ حمل تطبيق عمل اليوم والليلة الآن من متجر التطبيقات ✨\n تطبيق رائع ✨ يحتوي جميع اعمال وأدعية المسلم 🤲 في يومه وليلته, ايضاً يمكنك قراءة القرآن 📖 وتتبع أوقات الأذان 🕌. وأينما كنت يمكنك تحديد اتجاه القبلة 🧭. فقط حمله الآن 🔽🔽⏬🔽🔽!.\n\n'
         'https://play.google.com/store/apps/details?id=com.Letterspd.amal_alyoum';
 
     SharePlus.instance.share(ShareParams(text: message));
   }
 
-  Future<void> _updatenew_azkar_appData() async {
+  Future<void> _updateData() async {
     try {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            content: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: AppColors.secondaryColor.withOpacity(0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        AppColors.secondaryColor,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'جاري تحديث البيانات...',
-                    style: TextStyles.medium.copyWith(
-                      color: AppColors.secondaryColor,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      );
+      await ref.read(dataUpdateProvider.notifier).updateData();
 
-      await _isarServices.updateAzkarData();
-      Navigator.of(context).pop();
+      if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -699,7 +682,7 @@ class _SettingsViewState extends ConsumerState<SettingsView>
               SizedBox(
                 width: MediaQuery.of(context).size.width * .75,
                 child: Text(
-                  'تم تحديث, رجاءا اعد تشغيل التطبيق.',
+                  'تم تحديث البيانات بنجاح',
                   softWrap: true,
                   textAlign: TextAlign.center,
                   style: TextStyles.medium.copyWith(color: Colors.white),
@@ -715,7 +698,8 @@ class _SettingsViewState extends ConsumerState<SettingsView>
         ),
       );
     } catch (e) {
-      Navigator.of(context).pop();
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
