@@ -9,6 +9,9 @@ import 'package:new_azkar_app/core/providers/version_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:go_router/go_router.dart';
+import 'package:new_azkar_app/core/constants/routes.dart';
+import 'package:new_azkar_app/features/splash/views/splash_view.dart';
 
 class SettingsView extends ConsumerStatefulWidget {
   const SettingsView({super.key});
@@ -123,6 +126,16 @@ class _SettingsViewState extends ConsumerState<SettingsView>
               const SizedBox(height: 16),
 
               _buildSectionTitle('إدارة البيانات'),
+              _buildActionTile(
+                icon: Icons.library_music,
+                title: 'التحميلات',
+                subtitle: 'إدارة تنزيلات الملفات الصوتية',
+                onTap: () {
+                  context.pushNamed(Routes.downloads);
+                },
+                color: AppColors.primaryColor,
+              ),
+              const SizedBox(height: 12),
               _buildActionTile(
                 icon: Icons.update,
                 title: 'تحديث بيانات الأذكار',
@@ -682,7 +695,7 @@ class _SettingsViewState extends ConsumerState<SettingsView>
               SizedBox(
                 width: MediaQuery.of(context).size.width * .75,
                 child: Text(
-                  'تم تحديث البيانات بنجاح',
+                  'تم تحديث البيانات بنجاح\ أعد تشغيل التطبيق...',
                   softWrap: true,
                   textAlign: TextAlign.center,
                   style: TextStyles.medium.copyWith(color: Colors.white),
@@ -695,6 +708,7 @@ class _SettingsViewState extends ConsumerState<SettingsView>
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
+          duration: const Duration(milliseconds: 1200),
         ),
       );
     } catch (e) {

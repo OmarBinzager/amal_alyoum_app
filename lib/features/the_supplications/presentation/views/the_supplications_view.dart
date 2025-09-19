@@ -51,27 +51,31 @@ class TheSupplicationsView extends ConsumerWidget {
                         HeaderModel(
                           label:
                               'أذكار وأوراد تقرأ صباحًا (من نصف  الليل إلى الزوال)',
-                          headers: [93, 94, 95, 96, 97, 98, 106, 107, 109],
+                          headers: [93, 94, 95, 96, 97, 98, 110, 111, 112],
                         ),
                         HeaderModel(
                           label:
                               'أذكار وأوراد تقرأ مساء (من الزوال إلى نصف  الليل)',
                           headers: [
+                            99,
                             100,
                             101,
                             102,
                             103,
                             104,
                             105,
-                            106,
+                            110,
+                            111,
+                            112,
                             106,
                             107,
+                            108,
                             109,
                           ],
                         ),
                         HeaderModel(
                           label: 'أذكار وأوراد تقرأ صباحًا أو مساء',
-                          fromHeader: 110,
+                          fromHeader: 113,
                           toHeader: 131,
                         ),
                       ],

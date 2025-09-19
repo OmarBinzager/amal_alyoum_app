@@ -18,6 +18,7 @@ import 'package:new_azkar_app/features/public/presentation/views/content_details
 import 'package:new_azkar_app/features/public/presentation/views/contents_view.dart';
 import 'package:new_azkar_app/features/public/presentation/views/headers_viewer.dart';
 import 'package:new_azkar_app/features/public/presentation/views/headers_of_headers_viewer.dart';
+import 'package:new_azkar_app/features/settings/presentation/views/downloads_view.dart';
 import 'package:new_azkar_app/features/splash/views/splash_view.dart';
 import 'package:new_azkar_app/features/the_supplications/presentation/views/the_supplications_view.dart';
 import 'package:new_azkar_app/features/tips_and_etiquette/presentation/views/tips_and_etiquette_view.dart';
@@ -68,13 +69,16 @@ final router = GoRouter(
       name: Routes.headersViewer,
       path: '/headersViewer',
       builder:
-          (context, state) => HeadersViewer(headerModel: state.extra as HeaderModel),
+          (context, state) =>
+              HeadersViewer(headerModel: state.extra as HeaderModel),
     ),
     GoRoute(
       name: Routes.headersOfHeadersViewer,
       path: '/headersOfHeadersViewer',
       builder:
-          (context, state) => HeadersOfHeadersViewer(headerList: state.extra as HeaderOfHeaderModel),
+          (context, state) => HeadersOfHeadersViewer(
+            headerList: state.extra as HeaderOfHeaderModel,
+          ),
     ),
     GoRoute(
       name: Routes.prayers,
@@ -120,6 +124,11 @@ final router = GoRouter(
       name: Routes.settings,
       path: '/settings',
       builder: (context, state) => const SettingsView(),
+    ),
+    GoRoute(
+      name: Routes.downloads,
+      path: '/downloads',
+      builder: (context, state) => const DownloadsView(),
     ),
   ],
 );

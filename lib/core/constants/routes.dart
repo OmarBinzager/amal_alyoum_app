@@ -1,6 +1,7 @@
 import 'package:new_azkar_app/features/search/presentation/views/search_view.dart';
 import 'package:new_azkar_app/features/settings/presentation/views/settings_view.dart';
 import 'package:go_router/go_router.dart';
+import 'package:new_azkar_app/features/settings/presentation/views/downloads_view.dart';
 
 class Routes {
   static const compass = 'compass';
@@ -23,6 +24,7 @@ class Routes {
   static const prayerTimes = 'prayerTimes';
   static const search = 'search';
   static const settings = 'settings';
+  static const downloads = 'downloads';
 }
 
 final routes = [
@@ -35,5 +37,10 @@ final routes = [
     name: Routes.settings,
     path: '/settings',
     builder: (context, state) => const SettingsView(),
+  ),
+  GoRoute(
+    name: Routes.downloads,
+    path: '/downloads',
+    builder: (context, state) => const DownloadsView(),
   ),
 ];

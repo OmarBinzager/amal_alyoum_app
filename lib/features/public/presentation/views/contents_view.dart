@@ -23,12 +23,12 @@ import 'package:quran/quran.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:new_azkar_app/core/providers/settings_provider.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'dart:async';
 
 import 'package:string_validator/string_validator.dart';
+import 'package:new_azkar_app/core/providers/settings_provider.dart';
 
 // Add available fonts
 const List<Map<String, String>> quranFonts = [
@@ -78,6 +78,11 @@ class _ContentsViewState extends ConsumerState<ContentsView>
   bool _atEndOfHeaders = false;
   late AnimationController _overscrollResetController;
   late Animation<double> _overscrollResetAnimation;
+
+  // Download state
+  bool _isDownloading = false;
+  double _downloadProgress = 0.0; // 0.0 -> 1.0
+  String? _localAudioPath;
 
   @override
   void initState() {
@@ -168,6 +173,113 @@ class _ContentsViewState extends ConsumerState<ContentsView>
     });
   }
 
+  Future<String> _getLocalAudioFilePath() async {
+    final Directory baseDir = await getApplicationDocumentsDirectory();
+    final Directory audioDir = Directory('${baseDir.path}/audios');
+    if (!await audioDir.exists()) {
+      await audioDir.create(recursive: true);
+    }
+    final String fileName = '${content!.voiceFile!}.mp3';
+    return '${audioDir.path}/$fileName';
+  }
+
+  Future<bool> _localAudioExists() async {
+    if (!content!.hasVoice || content!.voiceFile == null) return false;
+    final String path = await _getLocalAudioFilePath();
+    final file = File(path);
+    final exists = await file.exists();
+    if (exists) {
+      _localAudioPath = path;
+    }
+    return exists;
+  }
+
+  Future<void> _downloadAudio() async {
+    if (_isDownloading) return;
+    setState(() {
+      _isDownloading = true;
+      _downloadProgress = 0.0;
+      _isLoading = true;
+    });
+
+    final String url =
+        'https://drive.google.com/uc?export=download&id=${content!.voiceFile!}';
+    final String filePath = await _getLocalAudioFilePath();
+
+    final file = File(filePath);
+    HttpClient? httpClient;
+    try {
+      httpClient = HttpClient();
+      final Uri uri = Uri.parse(url);
+      final HttpClientRequest request = await httpClient.getUrl(uri);
+      final HttpClientResponse response = await request.close();
+
+      if (response.statusCode != 200) {
+        throw HttpException('Failed to download file: ${response.statusCode}');
+      }
+
+      final int? totalBytes =
+          response.contentLength > 0 ? response.contentLength : null;
+
+      final IOSink sink = file.openWrite();
+      int receivedBytes = 0;
+
+      await for (final List<int> chunk in response) {
+        sink.add(chunk);
+        receivedBytes += chunk.length;
+        if (totalBytes != null) {
+          setState(() {
+            _downloadProgress = receivedBytes / totalBytes;
+          });
+        }
+      }
+      await sink.flush();
+      await sink.close();
+
+      _localAudioPath = filePath;
+
+      // After download, set local source
+      await _audioPlayer.setSource(DeviceFileSource(filePath));
+      await _audioPlayer.setVolume(1.0);
+
+      if (mounted) {
+        setState(() {
+          _isDownloading = false;
+          _isLoading = false;
+          _downloadProgress = 1.0;
+        });
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('تم تنزيل الملف الصوتي وحفظه للتشغيل دون إنترنت'),
+          ),
+        );
+      }
+    } catch (e) {
+      // Clean up partial file if any
+      try {
+        if (await file.exists()) {
+          await file.delete();
+        }
+      } catch (_) {}
+
+      if (mounted) {
+        setState(() {
+          _isDownloading = false;
+          _isLoading = false;
+          _downloadProgress = 0.0;
+        });
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('تعذّر تنزيل الملف الصوتي')));
+      }
+    } finally {
+      httpClient?.close(force: true);
+    }
+  }
+
   Future<void> _initializeAudio() async {
     if (!content!.hasVoice || content!.voiceFile == null) return;
 
@@ -176,11 +288,14 @@ class _ContentsViewState extends ConsumerState<ContentsView>
         _isLoading = true;
       });
 
-      // Set the audio source
-      final audioPath = 'audio/${content!.voiceFile!}';
-      await _audioPlayer.setSource(AssetSource(audioPath));
+      // Prefer local if exists
+      if (await _localAudioExists()) {
+        await _audioPlayer.setSource(DeviceFileSource(_localAudioPath!));
+      } else {
+        // No local file: start download but do not auto-play yet
+        await _downloadAudio();
+      }
 
-      // Set volume
       await _audioPlayer.setVolume(1.0);
 
       setState(() {
@@ -198,11 +313,17 @@ class _ContentsViewState extends ConsumerState<ContentsView>
     if (!content!.hasVoice || content!.voiceFile == null) return;
 
     try {
+      // Ensure local file available
+      if (!await _localAudioExists()) {
+        await _downloadAudio();
+      }
+      if (_localAudioPath == null) return;
+
       setState(() {
         _isLoading = true;
       });
 
-      await _audioPlayer.play(AssetSource('audio/${content!.voiceFile!}'));
+      await _audioPlayer.play(DeviceFileSource(_localAudioPath!));
 
       setState(() {
         _isLoading = false;
@@ -260,9 +381,6 @@ class _ContentsViewState extends ConsumerState<ContentsView>
 
     final settings = ref.watch(settingsProvider);
 
-    // Night mode colors
-    // final Color bgColor =
-    //     settings.nightMode ? AppColors.fourthColor[900]! : Colors.white;
     final Color iconColor =
         settings.nightMode
             ? AppColors.secondaryColor[100]!
@@ -289,11 +407,42 @@ class _ContentsViewState extends ConsumerState<ContentsView>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          if (_isDownloading) ...[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    value:
+                        _downloadProgress > 0 && _downloadProgress < 1.0
+                            ? _downloadProgress
+                            : null,
+                    strokeWidth: 3,
+                    color: iconColor,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  _downloadProgress > 0
+                      ? 'جارٍ تنزيل الصوت ${(100 * _downloadProgress).toStringAsFixed(0)}%'
+                      : 'جارٍ تنزيل الصوت...',
+                  style: TextStyles.medium.copyWith(
+                    color: textColor,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+          ],
           // Auto-play indicator
           if (settings.autoPlayAudio &&
               !_isPlaying &&
               !_isLoading &&
-              !_autoPlayStopped)
+              !_autoPlayStopped &&
+              !_isDownloading)
             Container(
               margin: const EdgeInsets.only(bottom: 8),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -374,19 +523,24 @@ class _ContentsViewState extends ConsumerState<ContentsView>
               if (_duration.inSeconds > 0) ...[
                 IconButton(
                   icon: Icon(Icons.replay_10, color: iconColor, size: 30),
-                  onPressed: () {
-                    final newPosition = _position - const Duration(seconds: 10);
-                    if (newPosition.inSeconds >= 0) {
-                      _seekAudio(newPosition);
-                    }
-                    _startHideAudioControlsTimer();
-                  },
+                  onPressed:
+                      _isDownloading
+                          ? null
+                          : () {
+                            final newPosition =
+                                _position - const Duration(seconds: 10);
+                            if (newPosition.inSeconds >= 0) {
+                              _seekAudio(newPosition);
+                            }
+                            _startHideAudioControlsTimer();
+                          },
                 ),
                 const SizedBox(width: 16),
               ],
 
               GestureDetector(
                 onTap: () {
+                  if (_isDownloading) return;
                   _isLoading
                       ? null
                       : (_isPlaying ? _pauseAudio() : _playAudio());
@@ -400,7 +554,9 @@ class _ContentsViewState extends ConsumerState<ContentsView>
                     color: iconColor.withOpacity(0.1),
                   ),
                   child: Icon(
-                    _isLoading
+                    _isDownloading
+                        ? Icons.downloading
+                        : _isLoading
                         ? Icons.hourglass_empty
                         : (_isPlaying ? Icons.pause : Icons.play_arrow),
                     color: iconColor,
@@ -424,22 +580,25 @@ class _ContentsViewState extends ConsumerState<ContentsView>
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                onPressed: () async {
-                  setState(() {
-                    // Cycle through common speeds: 1.0, 1.25, 1.5, 2.0
-                    if (_audioSpeed == 1.0) {
-                      _audioSpeed = 1.25;
-                    } else if (_audioSpeed == 1.25) {
-                      _audioSpeed = 1.5;
-                    } else if (_audioSpeed == 1.5) {
-                      _audioSpeed = 2.0;
-                    } else {
-                      _audioSpeed = 1.0;
-                    }
-                  });
-                  await _audioPlayer.setPlaybackRate(_audioSpeed);
-                  _startHideAudioControlsTimer();
-                },
+                onPressed:
+                    _isDownloading
+                        ? null
+                        : () async {
+                          setState(() {
+                            // Cycle through common speeds: 1.0, 1.25, 1.5, 2.0
+                            if (_audioSpeed == 1.0) {
+                              _audioSpeed = 1.25;
+                            } else if (_audioSpeed == 1.25) {
+                              _audioSpeed = 1.5;
+                            } else if (_audioSpeed == 1.5) {
+                              _audioSpeed = 2.0;
+                            } else {
+                              _audioSpeed = 1.0;
+                            }
+                          });
+                          await _audioPlayer.setPlaybackRate(_audioSpeed);
+                          _startHideAudioControlsTimer();
+                        },
                 child: Text(
                   '${_audioSpeed}x',
                   style: const TextStyle(fontWeight: FontWeight.bold),
@@ -450,13 +609,17 @@ class _ContentsViewState extends ConsumerState<ContentsView>
                 const SizedBox(width: 16),
                 IconButton(
                   icon: Icon(Icons.forward_10, color: iconColor, size: 30),
-                  onPressed: () {
-                    final newPosition = _position + const Duration(seconds: 10);
-                    if (newPosition.inSeconds <= _duration.inSeconds) {
-                      _seekAudio(newPosition);
-                    }
-                    _startHideAudioControlsTimer();
-                  },
+                  onPressed:
+                      _isDownloading
+                          ? null
+                          : () {
+                            final newPosition =
+                                _position + const Duration(seconds: 10);
+                            if (newPosition.inSeconds <= _duration.inSeconds) {
+                              _seekAudio(newPosition);
+                            }
+                            _startHideAudioControlsTimer();
+                          },
                 ),
               ],
             ],
